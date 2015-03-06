@@ -1,3 +1,4 @@
+import java.awt.BorderLayout;
 import javax.swing.JFrame;
 
 public class GUImain extends Panel{
@@ -11,6 +12,10 @@ public class GUImain extends Panel{
         //Create and add new panel
         Panel panelP = new Panel();
         mainFrame.add(panelP);
+        
+        mainFrame.setLayout(new BorderLayout());
+        mainFrame.add(panelP, BorderLayout.CENTER);
+        mainFrame.pack();
         
         //set visible
         mainFrame.setVisible(true);
