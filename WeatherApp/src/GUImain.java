@@ -20,5 +20,5 @@ public class GUImain extends Panel{
         //set visible
         mainFrame.setVisible(true);
     }
-    
+
 }

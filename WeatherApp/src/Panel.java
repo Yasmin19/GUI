@@ -1,5 +1,8 @@
+import com.teknikindustries.yahooweather.WeatherDisplay;
+import com.teknikindustries.yahooweather.WeatherDoc;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -16,8 +19,8 @@ import javax.swing.JPanel;
 
 public class Panel extends JPanel{
     
-    private JButton homeButt, weekButt;
-    private JPanel homeView, weekView;
+    private JButton homeButt, weekButt, landscapeButt;
+    private JPanel homeView, weekView, landscapeView;
     private JLayeredPane lp;
     private JLabel mon, tue, wed, thur, fri, sat, sun, header, monT, tueT, wedT, thurT, friT, satT, sunT, back;
     
@@ -28,7 +31,55 @@ public class Panel extends JPanel{
         lp.setPreferredSize(new Dimension(320, 480));
         lp.setBorder(BorderFactory.createTitledBorder("Layer"));
         
+        weekView = weekPanel();
+        homeView = homePanel();
+        landscapeView = landscapePanel();
+        
+        add(lp);
+        lp.add(homeView, new Integer(2));
+        lp.add(weekView, new Integer(1));
+        lp.add(landscapeView, new Integer(0));
+        
+        
+    }     
+public JPanel homePanel(){
+        homeView = new JPanel();
+        homeView.setLayout(new FlowLayout(FlowLayout.LEFT));
+        homeView.setBackground(Color.GREEN);
+        
+        weekButt = new JButton("Week");
+        landscapeButt = new JButton("Landscape");
+        weekButt.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e)
+            {
+                //Execute when button is pressed
+                System.out.println("Show Week");
+                lp.setLayer(weekView, 2);
+                lp.setLayer(homeView, 1);
+                lp.setLayer(landscapeView, 0);
+            }
+        });
+        landscapeButt.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e)
+            {
+                //Execute when button is pressed
+                System.out.println("Show Landscape");
+                lp.setLayer(landscapeView, 2);
+                lp.setLayer(homeView, 1);
+                lp.setLayer(weekView, 0);
+            }
+        });
+        
+        homeView.add(weekButt);
+        homeView.add(landscapeButt);
+        homeView.setBounds(0,0,320,480);
+        return homeView;
+    }
+    
+    //Weekly panel
+    public JPanel weekPanel(){
         weekView = new JPanel();
+ 
 
         weekView.setBackground(new Color(224,243,240));
         homeView = new JPanel();
@@ -189,40 +240,47 @@ public class Panel extends JPanel{
         
         
         
-       
-        //////////////////END ///////////////
         
+        
+        homeButt = new JButton("Home");
         homeButt.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e)
+        public void actionPerformed(ActionEvent e)
             {
                 //Execute when button is pressed
-                System.out.println("Show home");
-                homeView.setVisible(true); 
-                weekView.setVisible(false);
-            }
-        });
-        weekButt.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e)
-            {
-                //Execute when button is pressed
-                System.out.println("Show Week");
-                weekView.setVisible(true); 
-                homeView.setVisible(false);
+                System.out.println("Show Home");
+                lp.setLayer(weekView, 1);
+                lp.setLayer(homeView, 2);
+                lp.setLayer(landscapeView, 0);
             }
         });
         
-        homeView.add(weekButt);
-   
-        
-        
+        weekView.add(homeButt);
         weekView.setBounds(0,0,320,480);
-        homeView.setBounds(0,0,320,480);
+        return weekView;
+    }
 
-        lp.add(homeView, new Integer(0));
-        lp.add(weekView, new Integer(1));
-        add(lp);
+    //Landscape view
+    public JPanel landscapePanel(){
+        lp.setPreferredSize(new Dimension(320, 480));
+
+        landscapeView = new JPanel();
+        landscapeView.setLayout(new FlowLayout(FlowLayout.LEFT));
+        landscapeView.setBackground(Color.GRAY);
         
-    
+        homeButt = new JButton("Home");
+        homeButt.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e)
+            {
+                //Execute when button is pressed
+                System.out.println("Show Home");
+                lp.setLayer(weekView, 1);
+                lp.setLayer(homeView, 2);
+                lp.setLayer(landscapeView, 0);
+            }
+        });
         
+        landscapeView.add(homeButt);
+        landscapeView.setBounds(0,0,480,320);
+        return landscapeView;
     }
 }
