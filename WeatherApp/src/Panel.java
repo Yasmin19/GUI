@@ -4,13 +4,17 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.BorderFactory;
+import java.io.FileInputStream;
+import java.io.IOException;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -19,36 +23,96 @@ import javax.swing.JPanel;
 
 public class Panel extends JPanel{
     
-    private JButton homeButt, weekButt, landscapeButt;
+    private JButton homeButt, weekButt, landscapeButt, rotate;
     private JPanel homeView, weekView, landscapeView;
     private JLayeredPane lp;
     private JLabel mon, tue, wed, thur, fri, sat, sun, header, monT, tueT, wedT, thurT, friT, satT, sunT, back;
+    private JLabel temp, unit, city, condition;
+    private Font CrayonCrumble;
     
     public Panel() {
         Graphics g;
         
         lp = new JLayeredPane();
         lp.setPreferredSize(new Dimension(320, 480));
-        lp.setBorder(BorderFactory.createTitledBorder("Layer"));
         
-        weekView = weekPanel();
         homeView = homePanel();
+        weekView = weekPanel();
         landscapeView = landscapePanel();
         
         add(lp);
         lp.add(homeView, new Integer(2));
         lp.add(weekView, new Integer(1));
-        lp.add(landscapeView, new Integer(0));
-        
-        
+        lp.add(landscapeView, new Integer(0));   
     }     
-public JPanel homePanel(){
+    
+    //Home panel
+    public JPanel homePanel(){
         homeView = new JPanel();
-        homeView.setLayout(new FlowLayout(FlowLayout.LEFT));
-        homeView.setBackground(Color.GREEN);
+        homeView.setBackground(new Color(224,243,240));
         
         weekButt = new JButton("Week");
         landscapeButt = new JButton("Landscape");
+        rotate = new JButton("");
+        rotate.setOpaque(false);
+        rotate.setContentAreaFilled(false);
+        rotate.setBorderPainted(false);
+
+        
+        temp = new JLabel();
+        unit = new JLabel();
+        city = new JLabel();
+        condition = new JLabel();
+        
+        //Get Weather info
+        WeatherDoc doc = new WeatherDoc("44418", "c");
+        WeatherDisplay disp = new WeatherDisplay();
+        
+        temp.setText(disp.getTemperature());
+        unit.setText(disp.getTemperatureUnit() + "\n");
+        city.setText(disp.getCity() + "\n");
+        condition.setText(disp.getCondition() + "\n");
+
+        /////Home View////////////////////////////
+        
+        homeView.setLayout(new GridBagLayout());
+        GridBagConstraints gc = new GridBagConstraints();
+        
+        
+        ImageIcon snow = new ImageIcon(getClass().getResource("snow.png"));
+        //ImageIcon rotate = new ImageIcon(getClass().getResource("rotate4.png"));
+        Icon Rotate = new ImageIcon(getClass().getResource("rotate4.png"));
+        
+        /// First Coloumn ////
+        gc.gridx = 0;
+        gc.gridy = 0;
+        gc.fill = GridBagConstraints.NORTHWEST;
+       // gc.fill = GridBagConstraints.HORIZONTAL;
+        //homeView.add(new JLabel(rotate), gc);
+        rotate.setIcon(Rotate);
+        homeView.add(rotate, gc);
+        
+        /// Second Coloumn ////
+        gc.gridx = 1;
+        gc.gridy = 0;
+        homeView.add(new JLabel(snow), gc);
+        
+        gc.gridx = 1;
+        gc.gridy = 2;
+        gc.fill = GridBagConstraints.HORIZONTAL;
+        homeView.add(temp, gc);
+        homeView.add(unit, gc);
+        homeView.add(city, gc);
+        homeView.add(condition, gc);
+        
+        gc.gridx = 1;
+        gc.gridy = 3;
+        //gc.fill = GridBagConstraints.HORIZONTAL;
+        gc.weighty = 1;
+        gc.anchor = GridBagConstraints.PAGE_END;
+        homeView.add(weekButt, gc);
+        homeView.add(landscapeButt, gc);
+        
         weekButt.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e)
             {
@@ -69,9 +133,16 @@ public JPanel homePanel(){
                 lp.setLayer(weekView, 0);
             }
         });
+        rotate.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e)
+            {
+                //Execute when button is pressed
+                rotate.setBackground(Color.GRAY);
+            }
+        });
         
-        homeView.add(weekButt);
-        homeView.add(landscapeButt);
+        
+
         homeView.setBounds(0,0,320,480);
         return homeView;
     }
@@ -80,20 +151,21 @@ public JPanel homePanel(){
     public JPanel weekPanel(){
         weekView = new JPanel();
  
-
+        homeButt = new JButton("Home");
         weekView.setBackground(new Color(224,243,240));
-        homeView = new JPanel();
-        homeView.setBackground(Color.RED);
-        weekView.setVisible(false); 
         
-        
-        
-        homeButt = new JButton("Home"); 
-        weekButt = new JButton("Week");
-        
-        ///// Changing Background to gradient ////
 
-        
+
+        ///// Changing Background to gradient ////
+        try{
+            CrayonCrumble = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("DKCrayonCrumble"));
+            GraphicsEnvironment ge =  GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("DKCrayonCrumble")));
+        }
+        catch (IOException | FontFormatException e) {
+            //Handle exception
+        }
+         //f = font.deriveFont(12f);
         
         //////GRIDBAG LAYOUT FOR WEEK VIEW/////////
         weekView.setLayout(new GridBagLayout());
@@ -108,7 +180,8 @@ public JPanel homePanel(){
         sat = new JLabel("Saturday");
         sun = new JLabel("Sunday");
         
-        header.setFont(new Font("Arial", Font.PLAIN, 24));
+        header.setFont(CrayonCrumble);
+       // header.setFont(new Font("Arial", Font.PLAIN, 24));
         mon.setFont(new Font("Arial", Font.PLAIN, 20));
         tue.setFont(new Font("Arial", Font.PLAIN, 20));
         wed.setFont(new Font("Arial", Font.PLAIN, 20));
@@ -207,9 +280,7 @@ public JPanel homePanel(){
         gc.anchor = GridBagConstraints.PAGE_END;
         gc.insets = new Insets(10,0,0,0);
         weekView.add(homeButt, gc);
-        //this.setVisible(true);
-        
-        
+
         
         /// Third Coloumn ///
         gc.weightx = 0.5;
@@ -239,10 +310,8 @@ public JPanel homePanel(){
         
         
         
+   
         
-        
-        
-        homeButt = new JButton("Home");
         homeButt.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e)
             {
@@ -254,7 +323,7 @@ public JPanel homePanel(){
             }
         });
         
-        weekView.add(homeButt);
+     
         weekView.setBounds(0,0,320,480);
         return weekView;
     }
