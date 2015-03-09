@@ -12,6 +12,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.FileInputStream;
 import java.io.IOException;
 import javax.swing.Icon;
@@ -19,6 +21,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class Panel extends JPanel{
@@ -27,7 +30,7 @@ public class Panel extends JPanel{
     private JPanel homeView, weekView, landscapeView;
     private JLayeredPane lp;
     private JLabel mon, tue, wed, thur, fri, sat, sun, header, monT, tueT, wedT, thurT, friT, satT, sunT, back;
-    private JLabel temp, unit, city, condition;
+    private JLabel temp, unit, city, condition, question, info, image;
     private Font CrayonCrumble;
     
     public Panel() {
@@ -51,18 +54,33 @@ public class Panel extends JPanel{
         homeView = new JPanel();
         homeView.setBackground(new Color(224,243,240));
         
-        weekButt = new JButton("Week");
-        landscapeButt = new JButton("Landscape");
-        rotate = new JButton("");
-        rotate.setOpaque(false);
-        rotate.setContentAreaFilled(false);
-        rotate.setBorderPainted(false);
-
+        ImageIcon snow = new ImageIcon(getClass().getResource("snow.png"));
+        Icon Rotate = new ImageIcon(getClass().getResource("rotate4.png"));
+        Icon Next = new ImageIcon(getClass().getResource("next.png"));
         
+        weekButt = new JButton("");
+        weekButt.setOpaque(false);
+        weekButt.setContentAreaFilled(false);
+        weekButt.setBorderPainted(false);
+        
+        landscapeButt = new JButton("");
+        landscapeButt.setOpaque(false);
+        landscapeButt.setContentAreaFilled(false);
+        landscapeButt.setBorderPainted(false);
+
+        image = new JLabel(snow);
         temp = new JLabel();
         unit = new JLabel();
         city = new JLabel();
         condition = new JLabel();
+        question = new JLabel("Did you know?");
+        info = new JLabel();
+        
+        String[] facts = new String[5];
+        facts[0] = "<html>Snowflakes are made up of crystals <br>of ice found in bits of dust in the air!"
+                   + "<br>They start out very small and grow.</html>";
+        
+        
         
         //Get Weather info
         WeatherDoc doc = new WeatherDoc("44418", "c");
@@ -72,6 +90,9 @@ public class Panel extends JPanel{
         unit.setText(disp.getTemperatureUnit() + "\n");
         city.setText(disp.getCity() + "\n");
         condition.setText(disp.getCondition() + "\n");
+        info.setText(facts[0]);
+        
+        temp.setFont(new Font("Arial", Font.PLAIN, 40));
 
         /////Home View////////////////////////////
         
@@ -79,39 +100,63 @@ public class Panel extends JPanel{
         GridBagConstraints gc = new GridBagConstraints();
         
         
-        ImageIcon snow = new ImageIcon(getClass().getResource("snow.png"));
-        //ImageIcon rotate = new ImageIcon(getClass().getResource("rotate4.png"));
-        Icon Rotate = new ImageIcon(getClass().getResource("rotate4.png"));
+
+        
+        
         
         /// First Coloumn ////
         gc.gridx = 0;
         gc.gridy = 0;
-        gc.fill = GridBagConstraints.NORTHWEST;
-       // gc.fill = GridBagConstraints.HORIZONTAL;
-        //homeView.add(new JLabel(rotate), gc);
-        rotate.setIcon(Rotate);
-        homeView.add(rotate, gc);
+        gc.weightx = 0;
+        gc.anchor = GridBagConstraints.FIRST_LINE_START;
+        gc.weightx = 0;
+        landscapeButt.setIcon(Rotate);
+        homeView.add(landscapeButt, gc);
+        
+        gc.gridx = 0;
+        gc.gridy = 4;
+        gc.gridwidth = 4;
+        gc.fill = GridBagConstraints.HORIZONTAL;
+        //gc.anchor = GridBagConstraints.CENTER;
+
+        homeView.add(info, gc);
+        
+ 
         
         /// Second Coloumn ////
         gc.gridx = 1;
         gc.gridy = 0;
-        homeView.add(new JLabel(snow), gc);
+        gc.anchor = GridBagConstraints.CENTER;
+        gc.weightx = 1.5; //Request additional horizontal space
+        homeView.add(image, gc);
         
         gc.gridx = 1;
         gc.gridy = 2;
-        gc.fill = GridBagConstraints.HORIZONTAL;
+        //gc.fill = GridBagConstraints.HORIZONTAL;
+        gc.anchor = GridBagConstraints.CENTER;
         homeView.add(temp, gc);
-        homeView.add(unit, gc);
-        homeView.add(city, gc);
-        homeView.add(condition, gc);
+        //homeView.add(unit, gc);
+        //homeView.add(city, gc);
+        //homeView.add(condition, gc);
         
         gc.gridx = 1;
         gc.gridy = 3;
-        //gc.fill = GridBagConstraints.HORIZONTAL;
-        gc.weighty = 1;
+        gc.anchor = GridBagConstraints.CENTER;
+        gc.weightx = 0.5; //Request additional horizontal space
+        homeView.add(condition, gc);
+        
+
+        gc.gridx = 1;
+        gc.gridy = 5;
+        gc.weightx = 1.5; //Request additional horizontal space;
         gc.anchor = GridBagConstraints.PAGE_END;
+        weekButt.setIcon(Next);
         homeView.add(weekButt, gc);
-        homeView.add(landscapeButt, gc);
+        
+        //// Third Coloumn /////
+     
+        
+        
         
         weekButt.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e)
@@ -133,30 +178,28 @@ public class Panel extends JPanel{
                 lp.setLayer(weekView, 0);
             }
         });
-        rotate.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e)
+        image.addMouseListener(new MouseAdapter() {
+        public void mouseEntered(MouseEvent e) 
             {
-                //Execute when button is pressed
-                rotate.setBackground(Color.GRAY);
+                //JOptionPane.showMessageDialog(null, "Mouse hover!");
+                JLabel warning = new JLabel("Don't forget");
+                homeView.add(warning);
             }
         });
-        
-        
-
         homeView.setBounds(0,0,320,480);
         return homeView;
     }
     
+    
+    
     //Weekly panel
     public JPanel weekPanel(){
         weekView = new JPanel();
- 
         homeButt = new JButton("Home");
         weekView.setBackground(new Color(224,243,240));
         
 
 
-        ///// Changing Background to gradient ////
         try{
             CrayonCrumble = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("DKCrayonCrumble"));
             GraphicsEnvironment ge =  GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -180,8 +223,8 @@ public class Panel extends JPanel{
         sat = new JLabel("Saturday");
         sun = new JLabel("Sunday");
         
-        header.setFont(CrayonCrumble);
-       // header.setFont(new Font("Arial", Font.PLAIN, 24));
+        //header.setFont(CrayonCrumble);
+        header.setFont(new Font("Arial", Font.PLAIN, 24));
         mon.setFont(new Font("Arial", Font.PLAIN, 20));
         tue.setFont(new Font("Arial", Font.PLAIN, 20));
         wed.setFont(new Font("Arial", Font.PLAIN, 20));
