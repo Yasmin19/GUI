@@ -18,6 +18,7 @@ public class GUImain extends Panel{
         mainFrame.setLayout(new BorderLayout());
         mainFrame.add(panelP, BorderLayout.CENTER);
         mainFrame.pack();
+        mainFrame.setLocationRelativeTo(null);
         
         //set visible
         mainFrame.setVisible(true);
